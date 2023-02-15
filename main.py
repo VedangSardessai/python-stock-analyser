@@ -1,33 +1,84 @@
-import talib as ta
-import matplotlib.pyplot as plt
-import pandas as pd
-import yfinance as yf
+import customtkinter
+from plotter_function import plot_stock_graph
 
-ticker = 'RELIANCE.NS'
-start_date = '2022-8-11'
-end_date = '2023-2-13'
-data_source = 'yahoo'
+customtkinter.set_appearance_mode("dark")
+customtkinter.set_default_color_theme("dark-blue")
 
-ticker_data = yf.download(ticker)
+root = customtkinter.CTk()
+root.geometry("10800*10800")
 
-pd.options.display.max_columns = None
-pd.options.display.max_rows = None
 
-df = pd.DataFrame(ticker_data)
-df['EMA_100'] = ta.EMA(df['Close'], 100)
-df = df.round({'Open': 0, 'High': 0, 'Low': 0, 'Close': 0, 'SMA_100': 0})
-print(df)
+def choose_stock_and_indicator():
+    print('Test')
 
-df['LinearReg'] = ta.LINEARREG(df['Close'], 100)
-plt.plot(df['Close'])
-# plt.plot(df['EMA_100'])
-plt.plot(df['LinearReg'])
 
-# df['RSI'] = ta.RSI(df['Close'])
-#
-# fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [3, 1]}, figsize=(10, 6))
-# axs[0].plot(df['Close'])
-# axs[1].axhline(y=60, color='r', linestyle='--')
-# axs[1].axhline(y=40, color='g', linestyle='--')
-# axs[1].plot(df['RSI'], color='orange')
-plt.show()
+frame = customtkinter.CTkFrame(master=root)
+frame.pack(pady=20, padx=60, fill='both', expand='true')
+
+label = customtkinter.CTkLabel(master=frame, text="Analyze Stock", font=("Comic Sans MS", 30, "bold"))
+label.pack(pady=12, padx=10)
+
+stockDropdownLabel = customtkinter.CTkLabel(master=frame, text="Choose a Company you want to analyze", font=("Comic Sans MS", 22))
+stockDropdownLabel.pack(pady=12, padx=10)
+
+stockChosen = ""
+indicatorChosen = ""
+
+
+def mycalc():
+    print(stockDropdown.get(), 'In my calc')
+
+    if stockDropdown.get() == 'NIFTY':
+        # stockDropdown.set('^NSEI')
+        plot_stock_graph("^NSEI", indicatorDropDown.get())
+
+    else:
+        plot_stock_graph(stockDropdown.get() + '.NS', indicatorDropDown.get())
+
+
+def stock_menu_callback(choice):
+    # stockChosen = choice
+    print(stockDropdown.get(), 'Stock Dropdown get')
+    # print("Stock Chosen:", stockChosen)
+
+
+def indicator_menu_callback(choice):
+    # indicatorChosen = choice
+    print(indicatorDropDown.get(), 'indicator Dropdown get')
+    # print("Indicator Chosen:", indicatorChosen)
+
+
+stockDropdown = customtkinter.CTkOptionMenu(master=frame,
+                                            values=['NIFTY', 'ADANIPORTS', 'APOLLOHOSP', 'ASIANPAINT', 'AXISBANK',
+                                                    'BAJAJ-AUTO', 'BAJAJFINSV', 'BAJFINANCE', 'BHARTIARTL',
+                                                    'BPCL', 'BRITANNIA', 'CIPLA', 'COALINDIA', 'DIVISLAB',
+                                                    'DRREDDY', 'EICHERMOT', 'GRASIM', 'HCLTECH', 'HDFC',
+                                                    'HDFCBANK', 'HDFCLIFE', 'HEROMOTOCO', 'HINDALCO',
+                                                    'HINDUNILVR', 'ICICIBANK', 'INDUSINDBK', 'INFY',
+                                                    'ITC', 'JSWSTEEL', 'KOTAKBANK', 'LT',
+                                                    'M&M', 'MARUTI', 'NESTLEIND', 'NTPC',
+                                                    'ONGC', 'POWERGRID', 'RELIANCE', 'SBILIFE',
+                                                    'SBIN', 'SHREECEM', 'SUNPHARMA', 'TATACONSUM',
+                                                    'TATAMOTORS', 'TATASTEEL', 'TCS', 'TECHM',
+                                                    'TITAN', 'ULTRACEMCO', 'UPL', 'WIPRO'],
+                                            command=stock_menu_callback)
+
+stockDropdown.pack(padx=20, pady=10)
+stockDropdown.set("Choose a Stock/Index")  # set initial value
+
+indicatorDropDownLabel = customtkinter.CTkLabel(master=frame, text='Choose Indicator for your Technical Analysis', font=("Comic Sans MS", 22))
+indicatorDropDownLabel.pack(pady=12, padx=10)
+
+indicatorDropDown = customtkinter.CTkOptionMenu(master=frame,
+                                                values=['SMA-5', 'SMA-7', 'SMA-9', 'SMA-12', 'SMA-21', 'SMA-50',
+                                                        'SMA-100', 'SMA-200', 'EMA-5', 'EMA-7', 'EMA-9', 'EMA-12',
+                                                        'EMA-21', 'EMA-50', 'EMA-100', 'EMA-200'],
+                                                command=indicator_menu_callback)
+
+indicatorDropDown.pack(padx=20, pady=10)
+indicatorDropDown.set("Choose an indicator")  # set initial value
+
+button = customtkinter.CTkButton(master=frame, text="Plot the charts", command=mycalc)
+button.pack(pady=12, padx=10)
+
+root.mainloop()
